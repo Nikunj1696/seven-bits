@@ -70,14 +70,13 @@ function Products() {
             </div>
           </div>
           <div className="col-md-6 d-flex flex-row-reverse">
-            <Link className="btn btn-primary " to="/product/add">
+            <Link className="btn btn-primary " to="/products/add">
               Add Product
             </Link>
           </div>
         </div>
         {!isLoading && productData.rows && (
           <>
-            {console.log("productData", productData)}
             <ProductList list={productData.rows} handleDelete={handleDelete} />
           </>
         )}

@@ -13,7 +13,7 @@ const isAuth = async (req, res, next) => {
     }
     const token = req.headers.authorization.split(" ")[1];
     const payload = await jwt.verify(token, constants.SALT);
-    const userVerified = await User.findOne({ _id: payload.id, token: token });
+	const userVerified = await User.findOne({ _id: payload.id, token: token });
     Container.set("auth-user", userVerified);
 
     req.payload = payload;

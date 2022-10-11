@@ -1,34 +1,32 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import constants from "../../utils/constants";
 import { useNavigate, Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { loginAction } from "../../store/actions/index";
+import { logOutAPI } from "../../api/login";
 
 const Header = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [userData, setUserData] = useState("");
   const user = useSelector((state) => state.userDetails);
 
   useEffect(() => {
-    const localData = localStorage.getItem("token") ?? "";
+    const localData = localStorage.getItem("accessToken") ?? "";
     setUserData(localData);
   }, [userData]);
 
-  const logoutHandler = () => {
+  const logoutHandler = async () => {
     try {
-      axios
-        .delete(`${constants.API_URL}/auth/logout`)
-        .then((res) => {
-          localStorage.removeItem("token");
-          alert(JSON.stringify(res.data?.message));
-          navigate("/login");
-          setUserData("");
-        })
-        .catch((e) => {
-          if (e.response) {
-            alert(e.response?.data?.message ?? "Something went wrong");
-          }
-        });
+      const res = await logOutAPI();
+      if (res.status === 200) {
+        dispatch(loginAction(""));
+        alert(JSON.stringify(res.message));
+        setUserData("");
+        navigate("/login");
+      }
+      if (res.status === 400) {
+        alert(res?.message ?? "Something went wrong");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -37,7 +35,7 @@ const Header = () => {
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
-          <Link className="navbar-brand" href="/">
+          <Link className="navbar-brand" to="/">
             Practical
           </Link>
           <button
@@ -80,6 +78,15 @@ const Header = () => {
                       aria-current="page"
                     >
                       Products
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link
+                      to="/metamask"
+                      className="nav-link active"
+                      aria-current="page"
+                    >
+                      Metamask
                     </Link>
                   </li>
                 </>

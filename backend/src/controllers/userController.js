@@ -3,6 +3,7 @@ const constants = require("../utils/constants");
 const sha256 = require("sha256");
 const fs = require("fs");
 const { ObjectId } = require("mongodb");
+const { Container } = require("typedi");
 
 class userController {
   /**
@@ -23,15 +24,6 @@ class userController {
       if (userExists) {
         throw "This email address is already registered";
       }
-      //   /**
-      //    * If user type if not admin then user can not add another user
-      //    */
-      //   if (userExists.type === constants.userType.user) {
-      //     res.json({
-      //       status: 401,
-      //       message: "Only admin can add users",
-      //     });
-      //   }
 
       // Hashing the password
       let hashPassword = sha256(data["password"] + constants.SALT);
@@ -287,6 +279,47 @@ class userController {
       res.json({
         status: 200,
         message: "User deleted successfully",
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Store Public address of Metamask
+   * @param {Object} req Request
+   * @param {Object} res Response
+   * @response JsonObject
+   */
+  static async storeMetamaskDetails(req, res) {
+    try {
+      const userData = Container.get("auth-user");
+
+      if (!userData) {
+        throw "User Doesn't Exists";
+      }
+		const finalData = {
+			publicAddress : req.body.publicAddress
+	  }
+      const updatedData = await User.updateOne(
+        {
+          email: userData["email"],
+        },
+        {
+          $set: finalData
+        }
+      );
+
+		/** Generating 4 random digit ping */
+      const pin = Math.random().toString().substr(2, 4);
+      res.json({
+        status: 200,
+        message: "User updated successfully",
+        data: {
+          pin,
+			userData,
+			publicAddress: finalData.publicAddress
+        },
       });
     } catch (error) {
       throw error;

@@ -3,7 +3,7 @@ import LoginValidation from "../../../validations/login";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginAction } from "../../../store/actions/index";
-import loginApi from "../../../api/login";
+import { loginAPI } from "../../../api/login";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const Login = () => {
                   email: values.email,
                   password: values.password,
                 };
-				  const res = await loginApi(dataToSend);
+				  const res = await loginAPI(dataToSend);
 				  
                 if (res.status === 200) {
                   dispatch(loginAction(res.data));

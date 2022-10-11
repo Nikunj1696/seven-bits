@@ -1,55 +1,63 @@
 import React, { useEffect, useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
-import constants from "../../utils/constants";
-import { addUserSchema, editUserSchema } from "../../validations/user";
+import { productSchema } from "../../validations/product";
 import { useNavigate, useParams } from "react-router-dom";
-import { addUserAPI, editUserAPI, getUserDetails } from "../../api/users";
+import {
+  addProductAPI,
+  editProductAPI,
+  getProductDetails,
+} from "../../api/products";
 
 export default function AddEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [userDetails, setUserDetails] = useState(null);
+  const [productDetails, setProductDetails] = useState(null);
+
   useEffect(() => {
-    if (id) getUser();
+    if (id) getProduct();
   }, []);
-  const getUser = async () => {
-    const getUserData = await getUserDetails(id);
-    setUserDetails(getUserData.data);
+
+  const getProduct = async () => {
+    const getProductData = await getProductDetails(id);
+    setProductDetails(getProductData.data);
   };
   return (
     <div>
       <div className="container">
-        <h2 className="mt-3 text-center">{`${id ? "Edit" : "Add"}`} User</h2>
+        <h2 className="mt-3 text-center">{`${id ? "Edit" : "Add"}`} Product</h2>
         <div className="row mt-3 ">
           <div className="col-md-4"></div>
           <Formik
             initialValues={{
-              full_name: userDetails?.full_name ?? "",
-              email: userDetails?.email ?? "",
-              password: "",
-              profile: null,
+              product_name: productDetails?.product_name ?? "",
+              description: productDetails?.description ?? "",
+              price: productDetails?.price ?? "",
+              quantity: productDetails?.quantity ?? "",
+              status: productDetails?.status ?? "",
+              image: null,
             }}
             enableReinitialize={true}
-            validationSchema={id ? editUserSchema : addUserSchema}
+            validationSchema={productSchema}
             onSubmit={async (values, { setSubmitting, resetForm }) => {
               const dataToSend = {
-                full_name: values.full_name,
-                email: values.email,
-                password: values.password,
-                type: constants.userType.user,
-                profile: values.profile ,
+                product_name: values.product_name ?? "",
+                description: values.description ?? "",
+                price: values.price ?? 0,
+                quantity: values.quantity ?? 0,
+                status: values.status ?? 0,
+                image: values.image ?? null,
               };
               let res;
               if (id) {
-                res = await editUserAPI(dataToSend, id);
+                res = await editProductAPI(dataToSend, id);
               } else {
-                res = await addUserAPI(dataToSend);
+                res = await addProductAPI(dataToSend);
               }
 
               if (res.status === 201 || res.status === 200) {
                 alert(JSON.stringify(res?.message));
                 await resetForm();
-                navigate("/users");
+                navigate("/products");
               }
 
               if (res.status === 400) {
@@ -57,74 +65,111 @@ export default function AddEdit() {
               }
               await setSubmitting(false);
             }}
-            render={({ isSubmitting, setFieldValue, values }) => (
+            render={({ isSubmitting, setFieldValue }) => (
               <Form className="col-md-4 g-3 card">
                 <div className="card-body">
                   <div className="mb-3 ">
-                    <label htmlFor="full_name" className="form-label">
-                      Full Name
+                    <label htmlFor="product_name" className="form-label">
+                      Product Name
                     </label>
                     <Field
                       type="text"
-                      name="full_name"
+                      name="product_name"
                       className="form-control"
-                      id="full_name"
+                      id="product_name"
                     />
                     <ErrorMessage
-                      name="full_name"
+                      name="product_name"
                       className="text-danger"
                       component="small"
                     />
                   </div>
                   <div className="mb-3 ">
-                    <label htmlFor="email" className="form-label">
-                      Email address
+                    <label htmlFor="description" className="form-label">
+                      Description
                     </label>
                     <Field
-                      type="email"
-                      name="email"
+                      type="text"
+                      as="textarea"
+                      name="description"
                       className="form-control"
-                      id="email"
-                      aria-describedby="emailHelp"
+                      id="description"
+                      aria-describedby="description"
                     />
                     <ErrorMessage
-                      name="email"
+                      name="description"
                       className="text-danger"
                       component="small"
                     />
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="password" className="form-label">
-                      Password
+                    <label htmlFor="price" className="form-label">
+                      Price
                     </label>
                     <Field
-                      type="password"
-                      name="password"
+                      type="number"
+                      name="price"
                       className="form-control"
-                      id="password"
+                      id="price"
                     />
                     <ErrorMessage
-                      name="password"
+                      name="price"
                       className="text-danger"
                       component="small"
                     />
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="editProfile" className="form-label">
-                      Profile
+                    <label htmlFor="quantity" className="form-label">
+                      Quantity
+                    </label>
+                    <Field
+                      type="number"
+                      name="quantity"
+                      className="form-control"
+                      id="quantity"
+                    />
+                    <ErrorMessage
+                      name="quantity"
+                      className="text-danger"
+                      component="small"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="status" className="form-label">
+                      Status
+                    </label>
+                    <Field
+                      type="text"
+                      as="select"
+                      name="status"
+                      className="form-control"
+                      id="status"
+                    >
+                      <option value={0}>Inactive</option>
+                      <option value={1}>Active</option>
+                    </Field>
+                    <ErrorMessage
+                      name="status"
+                      className="text-danger"
+                      component="small"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="image" className="form-label">
+                      Image
                     </label>
                     <Field
                       type="file"
-                      name="profile"
+                      name="image"
                       className="form-control"
-                      id="editProfile"
-                      value={""}
+                      id="image"
+                      value=""
                       onChange={(e) => {
-                        setFieldValue("profile", e.currentTarget.files[0]);
+                        setFieldValue("image", e.currentTarget.files[0]);
                       }}
                     />
                     <ErrorMessage
-                      name="profile"
+                      name="image"
                       className="text-danger"
                       component="small"
                     />

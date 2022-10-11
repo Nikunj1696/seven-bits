@@ -11,7 +11,10 @@ const Dashboard = React.lazy(() => import("../Components/Dashboard"));
 const Users = React.lazy(() => import("../Components/Users"));
 const AddEdit = React.lazy(() => import("../Components/Users/addEdit"));
 const Products = React.lazy(() => import("../Components/Products"));
-const ProductsAddEdit = React.lazy(() => import("../Components/Products/addEdit"));
+const ProductsAddEdit = React.lazy(() =>
+  import("../Components/Products/addEdit")
+);
+const Metamask = React.lazy(() => import("../Components/Metamask"));
 
 const RoutesList = () => {
   return (
@@ -83,6 +86,14 @@ const RoutesList = () => {
               element={
                 <AuthCheck>
                   <ProductsAddEdit />
+                </AuthCheck>
+              }
+            />
+            <Route
+              path="/metamask"
+              element={
+                <AuthCheck>
+                  <Metamask />
                 </AuthCheck>
               }
             />

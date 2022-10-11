@@ -31,6 +31,14 @@ const userSchema = new Schema(
 			type: String,
 			required: false,
 		},
+		publicAddress: {
+			type: String,
+			required: false
+		},
+		signature: {
+			type: String,
+			required: false
+		},
 		deleted_at: { type: Date, required: false, default: null },
     },
     {

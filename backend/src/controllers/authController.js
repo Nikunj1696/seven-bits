@@ -2,6 +2,7 @@ const User = require("../models/user.model");
 const constants = require("../utils/constants");
 const sha256 = require("sha256");
 const helper = require("../helpers");
+const { Container } = require("typedi");
 
 class userController {
   /**
@@ -103,21 +104,18 @@ class userController {
    */
   static async logout(req, res) {
     try {
-      const data = req.body;
-      let userExists = await User.findOne({
-        email: data["email"]
-      });
+		const userData = Container.get("auth-user");
 
-      if (!userExists) {
-        throw "Admin doesn't Exists with this email";
-      }
+      let userExists = await User.findOne({
+        email: userData["email"]
+      });
 
       /**
        * remove token from database
        */
       await User.updateOne(
         {
-          email: data["email"],
+          email: userExists["email"],
         },
         {
           $set: {
@@ -125,6 +123,7 @@ class userController {
           },
         }
       );
+		await Container.remove('auth-user');
 
       res.json({
         status: 200,

@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     
     let fileDir = config.profile_path;
-    if (file.filename === "image") {
+    if (file.filename == "image") {
       fileDir = config.product_path;
     }
 

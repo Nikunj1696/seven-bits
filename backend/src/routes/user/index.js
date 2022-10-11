@@ -45,6 +45,14 @@ const authRoutes = (app) => {
     mainHandler.catchErrors(userController.deleteUserDetails)
   );
 
+  /**
+   * Store Metamask public address in our record
+   */
+  router.post(
+    "/metamask",
+    isAuth,
+    mainHandler.catchErrors(userController.storeMetamaskDetails)
+  );
   app.use("/api/user", router);
 };
 

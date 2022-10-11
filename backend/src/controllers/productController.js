@@ -91,7 +91,7 @@ class productController {
   }
 
   /**
-   * View List by Product API
+   * View  Product List API
    * @param {Object} req Request
    * @param {Object} res Response
    * @response JsonObject
@@ -105,7 +105,10 @@ class productController {
         const searchQuery = filterData["search"].trim();
 
         filter_match.push({
-          $or: [{ product_name: { $regex: searchQuery, $options: "i" } }],
+          $or: [
+            { product_name: { $regex: searchQuery, $options: "i" } },
+            { description: { $regex: searchQuery, $options: "i" } },
+          ],
         });
       }
       const page =
@@ -181,13 +184,22 @@ class productController {
           $facet: facetQuery,
         },
       ]);
+      const productsData = products[0];
 
+      productsData.currentPage =
+        productsData.metadata[0]?.currentPage ?? constants.pageNo;
+      productsData.limit = productsData.metadata[0]?.limit ?? limit;
+      productsData.count = productsData.metadata[0]?.count ?? 0;
+      productsData.totalPage = Math.ceil(
+        productsData.count / productsData.limit
+      );
+
+      delete productsData.metadata;
       res.json({
         status: 200,
-        data: products,
+        data: productsData,
       });
     } catch (error) {
-      console.log("Errooorr", error);
       throw error;
     }
   }
@@ -209,7 +221,7 @@ class productController {
       }
       //delete Product image
       try {
-        await fs.unlinkSync(constants.image_path + productExists.image);
+        await fs.unlinkSync(constants.product_path + productExists.image);
       } catch (e) {
         throw "Failed to delete the image";
       }
@@ -221,6 +233,47 @@ class productController {
         status: 200,
         message: "Product deleted successfully",
       });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * View Product API
+   * @param {Object} req Request
+   * @param {Object} res Response
+   * @response JsonObject
+   */
+  static async viewProduct(req, res) {
+    try {
+      const id = req.params.id;
+      if (id) {
+        const productExists = await Product.findOne(
+          {
+            _id: ObjectId(id),
+          },
+          {
+            _id: 1,
+            product_name: 1,
+            description: 1,
+            price: 1,
+            quantity: 1,
+            status: 1,
+            image: 1,
+            created_at: 1,
+          }
+        );
+
+        if (!productExists) {
+          throw "Product not found";
+        }
+
+        res.json({
+          status: 200,
+          message: "Product data get successfully",
+          data: productExists,
+        });
+      }
     } catch (error) {
       throw error;
     }

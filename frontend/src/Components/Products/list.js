@@ -9,7 +9,9 @@ const ProductList = ({ list, handleDelete }) => {
           <tr>
             <th>Product Name</th>
             <th>Description</th>
-            <th>Profile</th>
+            <th>Image</th>
+            <th>Quantity</th>
+            <th>Price</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -19,10 +21,12 @@ const ProductList = ({ list, handleDelete }) => {
               <tr>
                 <td scope="row">{val.product_name ?? "-"}</td>
                 <td>{val.description ?? "-"}</td>
-                <td>{val.profile ?? "-"}</td>
+                <td>{val.image ?? "-"}</td>
+                <td>{val.quantity ?? "-"}</td>
+                <td>{val.price ?? "-"}</td>
                 <td>
                   <Link
-                    to={`/users/edit/${val._id}`}
+                    to={`/products/edit/${val._id}`}
                     className="btn btn-sm btn-warning mx-1"
                   >
                     Edit

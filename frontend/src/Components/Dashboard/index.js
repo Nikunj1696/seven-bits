@@ -36,6 +36,7 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="mt-3">
+          <h3>Latest users</h3>
           <div className="input-group row">
             <div className="col-md-6">
               <div className="input-group mb-3">

@@ -5,6 +5,7 @@ var app = express();
 const dotenv = require("dotenv").config();
 const connectDB = require("./db/connect");
 var cors = require("cors");
+const Web3 = require('web3');
 
 const port = dotenv.parsed.PORT || 5000;
 
@@ -25,6 +26,8 @@ app.use(
     origin: "*",
   })
 );
+
+const web3 = new Web3('ws://localhost:8546');
 
 
 app.get("/", function (req, res) {
